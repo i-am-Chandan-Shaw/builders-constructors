@@ -60,11 +60,11 @@ const testimonials = [
   ["Ronald Gibbs", "Simon has completed 3 phases of work. An excellent substantial patio, followed by a picket fence and front garden landscaping. All to a high standard. Another phase soon. Enough said?"],
 ];
 
-function Brand() {
+function Brand({ footer = false }: { footer?: boolean }) {
   return (
     <a href="#top" className="flex items-center gap-3" aria-label="Hyland Landscapes home">
       <span className="grid size-9 place-items-center rounded-full bg-primary text-primary-foreground"><Leaf className="size-4" /></span>
-      <span className="font-display text-lg font-semibold text-foreground">Hyland <span className="font-normal text-muted-foreground">Landscapes</span></span>
+      <span className={`font-display text-lg font-semibold ${footer ? "text-footer-foreground" : "text-foreground"}`}>Hyland <span className={`font-normal ${footer ? "text-footer-muted" : "text-muted-foreground"}`}>Landscapes</span></span>
     </a>
   );
 }
@@ -171,7 +171,7 @@ function Index() {
 
       <section id="contact" className="bg-primary py-16 text-primary-foreground md:py-20"><div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 md:px-8 lg:flex-row lg:items-center lg:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-70">Free estimates & quotation</p><h2 className="mt-3 max-w-3xl font-display text-4xl font-semibold leading-tight md:text-6xl">Ready to see what your garden could become?</h2></div><Button asChild size="lg" className="h-14 shrink-0 bg-background px-7 text-foreground hover:bg-background/90"><a href="tel:07866256464"><Phone /> 07866 256 464</a></Button></div></section>
 
-      <footer className="bg-footer py-12 text-footer-foreground"><div className="mx-auto max-w-[1240px] px-5 md:px-8"><div className="flex flex-col gap-10 border-b border-footer-border pb-10 md:flex-row md:items-start md:justify-between"><Brand /><nav className="flex flex-wrap gap-x-7 gap-y-3" aria-label="Footer navigation">{navItems.map(([label, href]) => <a key={href} href={href} className="text-sm text-footer-muted hover:text-footer-foreground">{label}</a>)}</nav></div><div className="flex flex-col gap-3 pt-6 text-xs text-footer-muted md:flex-row md:items-center md:justify-between"><p>© Hyland Landscapes</p><a href="tel:07866256464" className="hover:text-footer-foreground">07866 256 464</a></div></div></footer>
+      <footer className="bg-footer py-12 text-footer-foreground"><div className="mx-auto max-w-[1240px] px-5 md:px-8"><div className="flex flex-col gap-10 border-b border-footer-border pb-10 md:flex-row md:items-start md:justify-between"><Brand footer /><nav className="flex flex-wrap gap-x-7 gap-y-3" aria-label="Footer navigation">{navItems.map(([label, href]) => <a key={href} href={href} className="text-sm text-footer-muted hover:text-footer-foreground">{label}</a>)}</nav></div><div className="flex flex-col gap-3 pt-6 text-xs text-footer-muted md:flex-row md:items-center md:justify-between"><p>© Hyland Landscapes</p><a href="tel:07866256464" className="hover:text-footer-foreground">07866 256 464</a></div></div></footer>
     </main>
   );
 }
