@@ -19,6 +19,9 @@
  */
 
 @theme inline {
+  --font-sans: "Manrope", sans-serif;
+  --font-display: "Manrope", sans-serif;
+  --font-serif-display: "DM Serif Display", serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,29 +62,43 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+  --color-hero: var(--hero);
+  --color-hero-muted: var(--hero-muted);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
+  --color-footer-muted: var(--footer-muted);
+  --color-footer-border: var(--footer-border);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.4rem;
+  --background: oklch(0.965 0.012 104);
+  --foreground: oklch(0.18 0.025 151);
+  --card: oklch(0.985 0.007 101);
+  --card-foreground: oklch(0.18 0.025 151);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --primary: oklch(0.71 0.15 79);
+  --primary-foreground: oklch(0.17 0.025 151);
+  --secondary: oklch(0.89 0.025 112);
+  --secondary-foreground: oklch(0.2 0.035 151);
+  --muted: oklch(0.91 0.018 106);
+  --muted-foreground: oklch(0.48 0.025 137);
+  --accent: oklch(0.35 0.07 145);
+  --accent-foreground: oklch(0.98 0.008 104);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.84 0.022 111);
+  --input: oklch(0.84 0.022 111);
+  --ring: oklch(0.71 0.15 79);
+  --surface: oklch(0.925 0.02 119);
+  --hero: oklch(0.98 0.008 104);
+  --hero-muted: oklch(0.88 0.012 105);
+  --footer: oklch(0.14 0.022 151);
+  --footer-foreground: oklch(0.96 0.012 105);
+  --footer-muted: oklch(0.68 0.018 134);
+  --footer-border: oklch(0.96 0.012 105 / 14%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +157,47 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    scroll-behavior: smooth;
   }
+
+  ::selection { background: var(--color-primary); color: var(--color-primary-foreground); }
+}
+
+@utility hero-shade {
+  background: linear-gradient(90deg, oklch(0.11 0.028 151 / 94%) 0%, oklch(0.12 0.025 151 / 78%) 33%, oklch(0.12 0.025 151 / 18%) 67%, transparent 100%), linear-gradient(0deg, oklch(0.08 0.02 151 / 32%), transparent 50%);
+}
+
+@utility parallax-shade {
+  background: linear-gradient(0deg, oklch(0.08 0.02 151 / 52%), oklch(0.08 0.02 151 / 10%) 55%, oklch(0.08 0.02 151 / 24%));
+}
+
+@utility section-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+@utility section-title {
+  max-width: 46rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+@media (max-width: 767px) {
+  .hero-shade { background: linear-gradient(90deg, oklch(0.1 0.026 151 / 90%), oklch(0.1 0.026 151 / 38%)), linear-gradient(0deg, oklch(0.08 0.02 151 / 54%), transparent 60%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
