@@ -197,7 +197,190 @@
   .hero-shade { background: linear-gradient(90deg, oklch(0.1 0.026 151 / 90%), oklch(0.1 0.026 151 / 38%)), linear-gradient(0deg, oklch(0.08 0.02 151 / 54%), transparent 60%); }
 }
 
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 18s linear infinite;
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.reveal.reveal-in {
+  animation: reveal-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes hyland-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hyland-letter {
+  display: inline-block;
+  opacity: 0;
+}
+
+.hyland-intro .hyland-letter {
+  animation: hyland-letter-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes ken-burns {
+  from { transform: scale(1); }
+  to { transform: scale(1.04); }
+}
+
+.ken-burns {
+  animation: ken-burns 24s ease-out forwards;
+  transform-origin: center center;
+}
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.reviews-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 42s linear infinite;
+}
+
+.reviews-marquee:hover .reviews-marquee-track,
+.reviews-marquee:focus-within .reviews-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes whatsapp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.whatsapp-float {
+  animation: whatsapp-float 3.2s ease-in-out infinite;
+}
+
+@keyframes quote-breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.06); }
+}
+
+.quote-glow {
+  animation: quote-breathe 5s ease-in-out infinite;
+}
+
+@keyframes success-circle {
+  from { transform: scale(0.55); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes success-check {
+  from { stroke-dashoffset: 32; opacity: 0; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes success-ring {
+  from { transform: scale(0.85); opacity: 0.45; }
+  to { transform: scale(1.55); opacity: 0; }
+}
+
+@keyframes success-copy {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quote-success-circle {
+  animation: success-circle 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.quote-success-check {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: success-check 0.45s 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.quote-success-ring {
+  animation: success-ring 0.9s 0.12s ease-out forwards;
+}
+
+.quote-success-copy {
+  animation: success-copy 0.5s 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+
+  .reveal,
+  .reveal.reveal-in {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  .hyland-letter {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none !important;
+  }
+
+  .ken-burns {
+    animation: none !important;
+  }
+
+  .reviews-marquee-track {
+    animation: none !important;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .reviews-marquee-clone {
+    display: none;
+  }
+
+  .whatsapp-float {
+    animation: none !important;
+  }
+
+  .quote-glow,
+  .quote-success-circle,
+  .quote-success-check,
+  .quote-success-ring,
+  .quote-success-copy {
+    animation: none !important;
+  }
+
+  .quote-success-check {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  .quote-success-copy {
+    opacity: 1;
+    transform: none;
+  }
 }
