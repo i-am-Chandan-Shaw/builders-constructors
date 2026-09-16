@@ -167,13 +167,15 @@ function HylandBanner() {
             ))}
           </p>
         </div>
-        <div className="absolute inset-x-0 bottom-12 mx-auto max-w-lg px-5">
-          <span className="inline-block rounded-full border border-emerald-400/40 bg-emerald-950/60 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-emerald-300 backdrop-blur-md">
-            Landscapes Made Personal
-          </span>
-          <p className="mt-3 text-sm font-medium text-emerald-100 md:text-base">
-            Specialists in all forms of garden and landscape work.
-          </p>
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#071c10]/70 to-transparent px-5 pb-8 pt-20 md:px-12 md:pb-10">
+          <div className="mx-auto flex max-w-[1440px] flex-col gap-1 md:flex-row md:items-baseline md:justify-between">
+            <p className="font-serif-display text-2xl leading-snug text-white md:text-[1.75rem]">
+              Landscapes made personal.
+            </p>
+            <p className="text-sm text-white/75">
+              Hard & soft landscaping across Coventry and Warwickshire
+            </p>
+          </div>
         </div>
       </div>
     </section>
