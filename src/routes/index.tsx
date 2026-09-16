@@ -10,7 +10,7 @@ import gardenDesign from "@/assets/garden-design.jpg";
 import gardenLowMaintenance from "@/assets/garden-low-maintenance.jpg";
 import gardenMakeover from "@/assets/garden-makeover.jpg";
 import gardenNewHome from "@/assets/garden-new-home.jpg";
-import parallaxImage from "@/assets/hyland-parallax.jpg";
+import parallaxImage from "@/assets/hyland-parallax-hd.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -140,11 +140,9 @@ function HylandBanner() {
       >
         <img
           src={parallaxImage}
-          width={1920}
-          height={1080}
           loading="lazy"
           alt="Immersive lush green estate landscape with sweeping lawn and flower gardens"
-          className={`h-full w-full object-cover ${inView ? "ken-burns" : ""}`}
+          className="parallax-zoom-loop h-full w-full object-cover object-center"
         />
       </div>
       <div className="parallax-shade absolute inset-0" />

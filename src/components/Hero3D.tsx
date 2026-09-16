@@ -16,8 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import heroWideImg from "@/assets/hero-landscape-wide.jpg";
-import heroPortraitImg from "@/assets/hero-landscape-portrait.jpg";
+import heroBg16k from "@/assets/hero-bg-16k.png";
 
 type Hero3DProps = {
   onQuoteModalChange?: (open: boolean) => void;
@@ -118,17 +117,16 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
         aria-labelledby="hero-heading"
       >
         <div
-          className="absolute inset-x-0 -top-[12%] h-[124%] w-full will-change-transform"
+          className="absolute inset-x-0 -top-[8%] h-[120%] w-full overflow-hidden will-change-transform"
           style={{ transform: `translate3d(0, ${parallax}px, 0)` }}
         >
-          <picture>
-            <source media="(min-width: 768px)" srcSet={heroWideImg} />
-            <img
-              src={heroPortraitImg}
-              alt="Sweeping landscaped garden with lawn, planting and a country house"
-              className="h-full w-full object-cover object-center"
-            />
-          </picture>
+          <img
+            src={heroBg16k}
+            alt="Sweeping landscaped garden with lawn, planting and a country house"
+            fetchPriority="high"
+            decoding="async"
+            className="hero-zoom h-full w-full object-cover object-center"
+          />
         </div>
 
         <div className="hero-shade pointer-events-none absolute inset-0" />

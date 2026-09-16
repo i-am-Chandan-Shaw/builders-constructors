@@ -257,6 +257,27 @@
   transform-origin: center center;
 }
 
+@keyframes parallax-zoom-loop {
+  from { transform: scale(1); }
+  to { transform: scale(1.16); }
+}
+
+.parallax-zoom-loop {
+  animation: parallax-zoom-loop 18s ease-in-out infinite alternate;
+  transform-origin: 50% 42%;
+  will-change: transform;
+}
+
+@keyframes hero-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+
+.hero-zoom {
+  animation: hero-zoom 36s ease-out forwards;
+  transform-origin: 55% 45%;
+}
+
 @keyframes marquee-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -347,7 +368,9 @@
     animation: none !important;
   }
 
-  .ken-burns {
+  .ken-burns,
+  .hero-zoom,
+  .parallax-zoom-loop {
     animation: none !important;
   }
 
