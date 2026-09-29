@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ArrowDown, ArrowRight, Leaf, Phone } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowDown, ArrowRight, Building2, Phone, Sparkles, CheckCircle, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,18 +16,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import heroBg16k from "@/assets/hero-bg-16k.png";
+import heroBg8k from "@/assets/uk-builder-hero.jpg";
+import extensionBg8k from "@/assets/uk-builder-extension.jpg";
+import kitchenBg8k from "@/assets/uk-builder-kitchen.jpg";
 
 type Hero3DProps = {
   onQuoteModalChange?: (open: boolean) => void;
 };
 
+const heroSlides = [
+  {
+    id: 0,
+    title: "Solid Conservatory Roof Conversions",
+    tag: "Tiled Warm Roofs",
+    location: "Coventry & Warwickshire",
+    image: heroBg8k,
+    alt: "Ultra 8K British luxury home with solid slate tiled conservatory roof conversion, Velux skylights and modern glass extension by 4S Builders LTD",
+  },
+  {
+    id: 1,
+    title: "Architectural House Extensions",
+    tag: "Rear & Gable Extensions",
+    location: "Solihull & West Midlands",
+    image: extensionBg8k,
+    alt: "Ultra 8K modern UK luxury home extension with expansive glass doors and architectural brickwork by 4S Builders LTD",
+  },
+  {
+    id: 2,
+    title: "Bespoke Kitchens & Open Living",
+    tag: "Custom Kitchen Remodeling",
+    location: "Nationwide UK",
+    image: kitchenBg8k,
+    alt: "Luxury British kitchen renovation with marble island and bespoke cabinets by 4S Builders LTD",
+  },
+];
+
 export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
-  const [lawnSize, setLawnSize] = useState("medium");
-  const [projectType, setProjectType] = useState("landscaping");
+  const [projectScale, setProjectScale] = useState("medium");
+  const [projectType, setProjectType] = useState("extensions");
   const [quoteSubmitted, setQuoteSubmitted] = useState(false);
-  const [parallax, setParallax] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const setOpen = (open: boolean) => {
     setQuoteModalOpen(open);
@@ -36,56 +66,73 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
   };
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches) return;
-
     let frame = 0;
-    const onScroll = () => {
+
+    const handleScroll = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        setParallax(Math.min(window.scrollY * 0.28, 140));
+        const el = containerRef.current;
+        if (!el) return;
+
+        const totalScrollable = el.scrollHeight - window.innerHeight;
+        if (totalScrollable <= 0) return;
+
+        // Reserve the final ~22% of scroll as a dwell/pause buffer on the last image
+        // so the last image stays parked before the sticky section scrolls away
+        const currentScroll = Math.max(0, window.scrollY);
+        const rawProgress = Math.max(0, Math.min(1, currentScroll / totalScrollable));
+        const slideProgress = Math.min(1, rawProgress / 0.78);
+        setScrollProgress(slideProgress);
       });
     };
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+
     return () => {
       cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
   }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md shadow-[0_2px_15px_rgba(0,0,0,0.04)]">
-        <div className="mx-auto flex h-[74px] max-w-[1440px] items-center justify-between px-5 md:px-8 lg:px-12">
-          <a href="#top" className="group flex items-center gap-3" aria-label="Hyland Landscapes home">
-            <span className="grid size-10 place-items-center rounded-xl bg-[#1e5a26] text-white shadow-md shadow-[#1e5a26]/20 transition-transform group-hover:scale-105">
-              <Leaf className="size-5" />
+      <header className="sticky top-0 z-50 w-full bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white shadow-[0_4px_25px_rgba(0,0,0,0.2)]">
+        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 md:px-8 lg:px-12">
+          <a href="#top" className="group flex items-center gap-3.5" aria-label="4S Builders LTD home">
+            <span className="grid size-11 place-items-center rounded-xl bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/20 transition-transform group-hover:scale-105">
+              <Building2 className="size-5" />
             </span>
             <div className="flex flex-col">
-              <span className="font-display text-lg font-bold tracking-tight text-[#0a2e18] sm:text-xl">
-                HYLAND<span className="text-[#2b8837]">LANDSCAPES</span>
-              </span>
-              <span className="hidden text-[9px] font-bold uppercase tracking-[0.22em] text-emerald-800/80 sm:block">
-                Hard & Soft Landscaping Specialists
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-xl font-black tracking-tight text-white sm:text-2xl">
+                  4S<span className="text-amber-400"> BUILDERS</span>
+                </span>
+                <span className="rounded bg-amber-400/20 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-amber-300">
+                  LTD
+                </span>
+              </div>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-300">
+                You Dream It, We Build It
               </span>
             </div>
           </a>
 
-          <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
+          <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
             {[
               ["HOME", "#top"],
               ["ABOUT US", "#about"],
               ["SERVICES", "#services"],
-              ["PORTFOLIO", "#projects"],
+              ["GALLERY", "#gallery"],
               ["TESTIMONIALS", "#reviews"],
               ["CONTACT US", "#contact"],
             ].map(([label, href]) => (
               <a
                 key={label}
                 href={href}
-                className="text-xs font-bold tracking-wider text-[#1e3b2b] transition-colors hover:text-[#2b8837]"
+                className="text-xs font-bold tracking-wider text-slate-300 transition-colors hover:text-amber-400"
               >
                 {label}
               </a>
@@ -94,112 +141,150 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
 
           <div className="flex items-center gap-3">
             <a
-              href="tel:07866256464"
-              className="hidden items-center gap-2 rounded-xl bg-emerald-50 px-3.5 py-2 text-xs font-bold text-[#1e5a26] transition hover:bg-emerald-100 sm:inline-flex"
+              href="tel:+447783686427"
+              className="hidden items-center gap-2 rounded-xl bg-slate-800/90 border border-slate-700 px-3.5 py-2 text-xs font-bold text-amber-300 transition hover:bg-slate-800 hover:text-amber-200 sm:inline-flex"
             >
-              <Phone className="size-3.5" />
-              07866 256 464
+              <Phone className="size-3.5 text-amber-400" />
+              +44 7783 686 427
             </a>
             <Button
               onClick={() => setOpen(true)}
-              aria-label="Free Quotation"
-              className="h-10 rounded-xl bg-[#1e5a26] px-3 text-[11px] font-bold text-white shadow-lg shadow-[#1e5a26]/20 hover:bg-[#16451c] sm:px-5 sm:text-xs"
+              aria-label="Contact for Quotation"
+              className="h-10 rounded-xl bg-amber-500 hover:bg-amber-400 px-4 text-xs font-bold text-slate-950 shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02]"
             >
-              <span className="sm:hidden" aria-hidden="true">Quote</span>
-              <span className="hidden sm:inline">Free Quotation</span>
+              <Sparkles className="size-3.5 mr-1.5 fill-slate-950" />
+              <span>Get Free Quote</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <section
-        className="relative isolate min-h-[calc(100svh-74px)] overflow-hidden bg-[#0a2e18] text-white"
-        aria-labelledby="hero-heading"
-      >
-        <div
-          className="absolute inset-x-0 -top-[8%] h-[120%] w-full overflow-hidden will-change-transform"
-          style={{ transform: `translate3d(0, ${parallax}px, 0)` }}
+      {/* SCROLL-DRIVEN HERO CAROUSEL CONTAINER (260vh creates smooth multi-card scroll + end pause buffer) */}
+      <div ref={containerRef} className="relative h-[260vh] bg-slate-950">
+        <section
+          className="sticky top-0 h-screen w-full overflow-hidden bg-slate-950 text-white"
+          aria-labelledby="hero-heading"
         >
-          <img
-            src={heroBg16k}
-            alt="Sweeping landscaped garden with lawn, planting and a country house"
-            fetchPriority="high"
-            decoding="async"
-            className="hero-zoom h-full w-full object-cover object-center"
-          />
-        </div>
-
-        <div className="hero-shade pointer-events-none absolute inset-0" />
-
-        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-74px)] max-w-[1440px] flex-col justify-end px-5 pb-20 pt-16 md:px-8 md:pb-24 lg:px-12">
-          <div className="max-w-xl">
-            <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-200/90">
-              Hard & soft landscaping specialists
-            </p>
-            <h1
-              id="hero-heading"
-              className="font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl"
+          {/* HORIZONTAL SHIFTING IMAGE TRACK (Seamless single continuous strip with zero gap) */}
+          <div className="absolute inset-0 overflow-hidden bg-slate-950">
+            <div
+              className="flex h-full will-change-transform"
+              style={{
+                width: `${heroSlides.length * 100}%`,
+                transform: `translate3d(-${(scrollProgress * (heroSlides.length - 1) * 100) / heroSlides.length}%, 0, 0)`,
+              }}
             >
-              Great gardens start here.
-            </h1>
-            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-white/85 md:text-base">
-              Hyland Landscapes provides a fully bespoke garden design service — professionally designed gardens, tailor-made for you and your family.
-            </p>
-            <p className="mt-6 text-sm font-medium tracking-wide text-emerald-100/95">
-              Free estimation in 30 seconds
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-3.5">
-              <Button
-                onClick={() => setOpen(true)}
-                className="group h-12 rounded-xl bg-white px-6 text-sm font-bold tracking-wide text-[#0a2e18] shadow-lg hover:bg-emerald-50"
-              >
-                <span>Free estimates & quotes</span>
-                <ArrowRight className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </Button>
-              <a
-                href="tel:07866256464"
-                className="flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-xs font-bold text-white backdrop-blur-sm transition hover:border-white/60 hover:bg-white/20"
-              >
-                <Phone className="size-3.5" />
-                07866 256 464
-              </a>
+              {heroSlides.map((slide, index) => (
+                <div
+                  key={slide.id}
+                  className="relative h-full flex-1 shrink-0 overflow-hidden"
+                >
+                  <img
+                    src={slide.image}
+                    alt={slide.alt}
+                    fetchPriority={index === 0 ? "high" : "low"}
+                    decoding="async"
+                    className="h-full w-full object-cover object-center select-none"
+                  />
+                </div>
+              ))}
             </div>
           </div>
-        </div>
 
-        <a
-          href="#about"
-          className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/70 transition hover:text-white"
-        >
-          Scroll
-          <ArrowDown className="size-3.5 animate-bounce" />
-        </a>
-      </section>
+          {/* Directional left-to-right gradient: provides rich contrast for text on the left, completely vanishes to transparent on the right */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/65 via-35% to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-950/80 to-transparent" />
+
+          {/* MAIN HERO CONTENT */}
+          <div className="relative z-10 mx-auto flex h-full max-w-[1440px] flex-col justify-center px-5 py-12 md:px-8 lg:px-12">
+            <div className="max-w-3xl">
+              {/* Main Headline */}
+              <h1
+                id="hero-heading"
+                className="font-display text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[4.25rem]"
+              >
+                You Dream It, <br />
+                <span className="text-amber-400 [text-shadow:0_4px_32px_rgba(251,191,36,0.45)]">
+                  We Build It.
+                </span>
+              </h1>
+
+              {/* Engaging Value Proposition */}
+              <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg md:text-xl font-normal">
+                Specializing in <strong className="text-white font-semibold">solid conservatory roof conversions</strong>, luxury house extensions, bespoke kitchens, designer bathrooms, and complete property transformations across Coventry, Warwickshire, and nationwide.
+              </p>
+
+              {/* Trust Highlights */}
+              <div className="mt-7 flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm font-semibold text-slate-200">
+                <span className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-slate-800/90 px-3.5 py-2 backdrop-blur-md shadow-sm">
+                  <CheckCircle className="size-4 text-amber-400 shrink-0" /> Free Quotations
+                </span>
+                <span className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-slate-800/90 px-3.5 py-2 backdrop-blur-md shadow-sm">
+                  <CheckCircle className="size-4 text-amber-400 shrink-0" /> 100% Satisfaction
+                </span>
+                <span className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-slate-800/90 px-3.5 py-2 backdrop-blur-md shadow-sm">
+                  <CheckCircle className="size-4 text-amber-400 shrink-0" /> Established 2019
+                </span>
+              </div>
+
+              {/* Spacious Call to Action Group */}
+              <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <Button
+                  onClick={() => setOpen(true)}
+                  className="group h-14 sm:h-15 rounded-2xl bg-amber-500 hover:bg-amber-400 px-8 sm:px-9 text-base font-extrabold tracking-wide text-slate-950 shadow-2xl shadow-amber-500/30 transition-all hover:scale-[1.02] ring-4 ring-amber-500/20 flex items-center justify-center"
+                >
+                  <Sparkles className="size-4 mr-2 fill-slate-950" />
+                  <span>Request Free Quotation</span>
+                  <ArrowRight className="ml-2.5 size-4.5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Button>
+
+                <a
+                  href="tel:+447783686427"
+                  className="h-14 sm:h-15 flex items-center justify-center gap-3 rounded-2xl border border-slate-700 bg-slate-900/80 px-7 sm:px-8 text-sm sm:text-base font-bold text-white backdrop-blur-md transition-all hover:border-amber-400 hover:bg-slate-900 shadow-xl"
+                >
+                  <Phone className="size-4.5 text-amber-400" />
+                  <span>Call +44 7783 686 427</span>
+                </a>
+              </div>
+
+              <p className="mt-4 text-xs font-medium text-slate-400">
+                No obligation • Upfront honest pricing • Scroll to explore featured builds ↓
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom Scroll Indicator */}
+          <a
+            href="#about"
+            className="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400 transition hover:text-white"
+          >
+            Scroll to About Section
+            <ArrowDown className="size-3.5 animate-bounce text-amber-400" />
+          </a>
+        </section>
+      </div>
+
 
       <Dialog open={quoteModalOpen} onOpenChange={setOpen}>
-        <DialogContent className="quote-dialog overflow-hidden rounded-3xl border-stone-200/70 bg-white p-8 shadow-[0_24px_80px_rgba(10,46,24,0.18)] sm:max-w-[500px]">
-          <div className="quote-glow pointer-events-none absolute inset-x-0 -top-16 h-40 bg-[radial-gradient(ellipse_at_top,rgba(43,136,55,0.22),transparent_70%)]" />
-          <DialogHeader className="relative space-y-3 text-left">
-            <p className="text-[11px] font-medium tracking-[0.18em] text-[#1e5a26]/80">
-              Free estimate
-            </p>
-            <DialogTitle className="font-serif-display text-3xl font-normal tracking-tight text-[#0e3820]">
-              Arrange your appointment
+        <DialogContent className="quote-dialog overflow-hidden rounded-3xl border-slate-800 bg-slate-900 p-8 text-white shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:max-w-[540px]">
+          <div className="quote-glow pointer-events-none absolute inset-x-0 -top-16 h-40 bg-[radial-gradient(ellipse_at_top,rgba(245,158,11,0.25),transparent_70%)]" />
+          <DialogHeader className="relative space-y-2 text-left">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-amber-400">
+              <Building2 className="size-3.5" /> 4S Builders LTD
+            </div>
+            <DialogTitle className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              Contact For Quotation
             </DialogTitle>
-            <DialogDescription className="text-[15px] leading-relaxed text-stone-500">
-              A free estimate in 30 seconds. We’ll follow up at{" "}
-              <a href="mailto:connect@hyland-landscapes.co.uk" className="text-[#1e5a26] underline-offset-2 hover:underline">
-                connect@hyland-landscapes.co.uk
-              </a>
-              .
+            <DialogDescription className="text-sm leading-relaxed text-slate-300">
+              Tell us about your project requirements. Our team will prepare a prompt, tailored quotation sent directly to your contact details.
             </DialogDescription>
           </DialogHeader>
 
           {quoteSubmitted ? (
             <div className="relative py-8 text-center">
               <div className="relative mx-auto mb-6 grid size-16 place-items-center">
-                <span className="quote-success-ring absolute inset-0 rounded-full border border-emerald-300" />
-                <span className="quote-success-circle grid size-16 place-items-center rounded-full bg-emerald-50 text-[#1e5a26]">
+                <span className="quote-success-ring absolute inset-0 rounded-full border border-amber-400" />
+                <span className="quote-success-circle grid size-16 place-items-center rounded-full bg-amber-400/20 text-amber-400">
                   <svg viewBox="0 0 24 24" className="size-8" fill="none" aria-hidden="true">
                     <path
                       className="quote-success-check"
@@ -213,15 +298,15 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
                 </span>
               </div>
               <div className="quote-success-copy">
-                <h3 className="font-serif-display text-2xl text-[#0e3820]">Request received</h3>
-                <p className="mt-2 text-sm leading-relaxed text-stone-500">
-                  Thank you. We’ll be in touch shortly to arrange a visit.
+                <h3 className="font-display text-2xl font-bold text-white">Quotation Request Received</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                  Thank you! Our 4S Builders team will review your specifications and contact you shortly via phone and email (<strong className="text-amber-400 font-semibold">info@4sbuildersltd.co.uk</strong>).
                 </p>
                 <Button
                   onClick={() => setOpen(false)}
-                  className="mt-6 h-11 w-full rounded-xl bg-[#1e5a26] text-sm font-semibold text-white hover:bg-[#15461c]"
+                  className="mt-6 h-11 w-full rounded-xl bg-amber-500 text-sm font-bold text-slate-950 hover:bg-amber-400"
                 >
-                  Done
+                  Close
                 </Button>
               </div>
             </div>
@@ -231,41 +316,47 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
                 e.preventDefault();
                 setQuoteSubmitted(true);
               }}
-              className="relative mt-2 space-y-5"
+              className="relative mt-2 space-y-4"
             >
-              <div className="space-y-2">
-                <label className="block text-sm text-stone-600">Project type</label>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-300">Service Required</label>
                 <Select value={projectType} onValueChange={setProjectType}>
-                  <SelectTrigger className="h-12 rounded-xl border-stone-200 bg-stone-50 px-4 text-left text-sm font-medium text-stone-800 shadow-none focus:ring-[#1e5a26]">
-                    <SelectValue placeholder="Choose a project" />
+                  <SelectTrigger className="h-11 rounded-xl border-slate-700 bg-slate-800 px-4 text-left text-sm font-medium text-white shadow-none focus:ring-amber-400">
+                    <SelectValue placeholder="Choose a building service" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-stone-200">
-                    <SelectItem value="landscaping">Bespoke garden design</SelectItem>
-                    <SelectItem value="makeover">Complete garden makeover</SelectItem>
-                    <SelectItem value="newhome">Garden for a new home</SelectItem>
-                    <SelectItem value="lowmaintenance">Low-maintenance outdoor space</SelectItem>
+                  <SelectContent className="rounded-xl border-slate-700 bg-slate-800 text-white">
+                    <SelectItem value="extensions">Home Extensions & Structural Build</SelectItem>
+                    <SelectItem value="roofing">Roofing & Solid Conservatory Roofs</SelectItem>
+                    <SelectItem value="kitchens">Kitchen Design & Remodeling</SelectItem>
+                    <SelectItem value="bathrooms">Bathrooms & Wet Rooms</SelectItem>
+                    <SelectItem value="driveways">Pavements, Patios & Driveways</SelectItem>
+                    <SelectItem value="loft">Loft Conversions & Dormers</SelectItem>
+                    <SelectItem value="metalworks">Metal Works & Structural Steel</SelectItem>
+                    <SelectItem value="electrical_plumbing">Electrical, Plumbing & Heating</SelectItem>
+                    <SelectItem value="plastering">Plastering, Drylining & Rendering</SelectItem>
+                    <SelectItem value="full_renovation">Full House Renovation</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm text-stone-600">Garden scale</label>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-300">Project Scale</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(
                     [
-                      ["small", "Small"],
-                      ["medium", "Medium"],
-                      ["large", "Large"],
+                      ["small", "Single Room / Repair"],
+                      ["medium", "Standard Extension"],
+                      ["large", "Full Property Build"],
                     ] as const
                   ).map(([val, label]) => (
                     <button
                       key={val}
                       type="button"
-                      onClick={() => setLawnSize(val)}
-                      className={`rounded-xl border px-3 py-2.5 text-center text-sm transition ${
-                        lawnSize === val
-                          ? "border-[#1e5a26] bg-[#1e5a26] text-white"
-                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                      onClick={() => setProjectScale(val)}
+                      className={`rounded-xl border px-2.5 py-2 text-center text-xs font-medium transition ${
+                        projectScale === val
+                          ? "border-amber-400 bg-amber-500 text-slate-950 font-bold"
+                          : "border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600"
                       }`}
                     >
                       {label}
@@ -275,31 +366,50 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <label className="block text-sm text-stone-600">Your name</label>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-300">Your Name *</label>
                   <input
                     required
                     type="text"
                     placeholder="Full name"
-                    className="h-12 w-full rounded-xl border border-stone-200 bg-stone-50 px-4 text-sm text-stone-800 placeholder:text-stone-400 focus:border-[#1e5a26] focus:outline-none focus:ring-1 focus:ring-[#1e5a26]"
+                    className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="block text-sm text-stone-600">Phone</label>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-300">Phone Number *</label>
                   <input
                     required
                     type="tel"
-                    placeholder="07866 256 464"
-                    className="h-12 w-full rounded-xl border border-stone-200 bg-stone-50 px-4 text-sm text-stone-800 placeholder:text-stone-400 focus:border-[#1e5a26] focus:outline-none focus:ring-1 focus:ring-[#1e5a26]"
+                    placeholder="+44 7783 686427"
+                    className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
               </div>
 
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-300">Email Address *</label>
+                <input
+                  required
+                  type="email"
+                  placeholder="your.email@example.co.uk"
+                  className="h-11 w-full rounded-xl border border-slate-700 bg-slate-800 px-3.5 text-sm text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-300">Project Details (Optional)</label>
+                <textarea
+                  rows={2}
+                  placeholder="Briefly describe your property location, room size, or timeline..."
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800 p-3 text-sm text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                />
+              </div>
+
               <Button
                 type="submit"
-                className="h-12 w-full rounded-xl bg-[#1e5a26] text-sm font-semibold text-white shadow-none hover:bg-[#15461c]"
+                className="h-12 w-full rounded-xl bg-amber-500 hover:bg-amber-400 text-sm font-extrabold text-slate-950 shadow-lg shadow-amber-500/20"
               >
-                Request free estimate
+                Submit Quotation Request
               </Button>
             </form>
           )}
@@ -308,3 +418,4 @@ export function Hero3D({ onQuoteModalChange }: Hero3DProps) {
     </>
   );
 }
+

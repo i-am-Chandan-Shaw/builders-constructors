@@ -7,13 +7,13 @@ export function WhatsAppFloat({ hidden = false }: WhatsAppFloatProps) {
 
   return (
     <a
-      href="https://wa.me/447866256464"
+      href="https://wa.me/447783686427"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat on WhatsApp"
+      aria-label="Chat on WhatsApp with 4S Builders LTD"
       className="whatsapp-float group fixed right-5 bottom-5 z-40 md:right-7 md:bottom-7"
     >
-      <span className="pointer-events-none absolute right-full top-1/2 mr-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-[#071c10] px-3.5 py-2 text-xs font-bold tracking-wide text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block">
+      <span className="pointer-events-none absolute right-full top-1/2 mr-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-[#0f172a] px-3.5 py-2 text-xs font-bold tracking-wide text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block">
         Chat on WhatsApp
       </span>
       <span className="grid size-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_rgba(37,211,102,0.45)] ring-4 ring-white/80 transition-transform duration-200 group-hover:scale-105">
