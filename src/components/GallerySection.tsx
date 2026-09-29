@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
   Maximize2,
-  Pause,
-  Play,
-  LayoutGrid,
-  SlidersHorizontal,
   FileCheck,
   Phone,
+  Images,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,85 +46,7 @@ type GallerySectionProps = {
 };
 
 export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySectionProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<"slider" | "grid">("slider");
-  const [progress, setProgress] = useState(0);
-
-  const SLIDE_DURATION = 4000; // 4 seconds per slide
-  const timerRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
-  const thumbnailScrollRef = useRef<HTMLDivElement | null>(null);
-
-  const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % galleryImages.length);
-    setProgress(0);
-    startTimeRef.current = Date.now();
-  }, []);
-
-  const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
-    setProgress(0);
-    startTimeRef.current = Date.now();
-  }, []);
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setProgress(0);
-    startTimeRef.current = Date.now();
-  };
-
-  // Keep thumbnail strip auto-scrolled to the active photo without moving the page window
-  useEffect(() => {
-    const container = thumbnailScrollRef.current;
-    if (container) {
-      const activeThumb = container.children[currentIndex] as HTMLElement | undefined;
-      if (activeThumb) {
-        const targetScroll =
-          activeThumb.offsetLeft - (container.clientWidth - activeThumb.clientWidth) / 2;
-        container.scrollTo({
-          left: Math.max(0, targetScroll),
-          behavior: "smooth",
-        });
-      }
-    }
-  }, [currentIndex]);
-
-  // Auto-slide ticker with smooth progress animation
-  useEffect(() => {
-    if (!isPlaying || isHovered || viewMode !== "slider" || lightboxIndex !== null) {
-      if (timerRef.current) {
-        cancelAnimationFrame(timerRef.current);
-        timerRef.current = null;
-      }
-      return;
-    }
-
-    startTimeRef.current = Date.now() - (progress / 100) * SLIDE_DURATION;
-
-    const tick = () => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const pct = Math.min((elapsed / SLIDE_DURATION) * 100, 100);
-      setProgress(pct);
-
-      if (pct >= 100) {
-        nextSlide();
-      } else {
-        timerRef.current = requestAnimationFrame(tick);
-      }
-    };
-
-    timerRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (timerRef.current) {
-        cancelAnimationFrame(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [isPlaying, isHovered, viewMode, lightboxIndex, nextSlide, progress]);
 
   // Lightbox open / close handler
   const openLightbox = (index: number) => {
@@ -158,7 +77,6 @@ export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySect
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxIndex]);
 
-  const activeImage = galleryImages[currentIndex];
   const lightboxImage = lightboxIndex !== null ? galleryImages[lightboxIndex] : null;
 
   return (
@@ -167,10 +85,11 @@ export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySect
       className="border-b border-slate-200 bg-white py-14 md:py-20 overflow-hidden"
     >
       <div className="mx-auto max-w-[1440px] px-5 md:px-8 lg:px-12">
-        {/* Section Header with Controls */}
-        <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        {/* Section Header */}
+        <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <Reveal direction="up">
-            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-600">
+            <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-blue-600">
+              <Images className="size-3.5 text-blue-600" />
               Work Showcase
             </div>
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
@@ -178,232 +97,79 @@ export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySect
             </h2>
             <p className="mt-3 max-w-2xl text-sm text-slate-600 md:text-base">
               A visual showcase of our authentic building craftsmanship and structural
-              transformations completed across the UK.
+              transformations completed across the UK. Click any photo to view full resolution.
             </p>
           </Reveal>
 
-          {/* Interactive Mode & Playback Controls */}
           <Reveal direction="up" delay={80}>
-            <div className="flex flex-wrap items-center gap-3">
-              {/* View Mode Toggle */}
-              <div className="flex items-center rounded-2xl border border-slate-200 bg-slate-50 p-1 shadow-xs">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("slider")}
-                  className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-                    viewMode === "slider"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                  aria-label="Switch to auto slider view"
-                >
-                  <SlidersHorizontal className="size-3.5" />
-                  <span>Auto Slider</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("grid")}
-                  className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-                    viewMode === "grid"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                  aria-label="Switch to grid view"
-                >
-                  <LayoutGrid className="size-3.5" />
-                  <span>All Photos</span>
-                </button>
-              </div>
-
-              {/* Slider Specific Controls (Play/Pause & Counter) */}
-              {viewMode === "slider" && (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsPlaying((prev) => !prev)}
-                    className="grid size-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:border-blue-500 hover:text-blue-600"
-                    aria-label={isPlaying ? "Pause auto slide" : "Start auto slide"}
-                  >
-                    {isPlaying ? <Pause className="size-4" /> : <Play className="size-4 ml-0.5" />}
-                  </button>
-
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={prevSlide}
-                      className="grid size-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:border-blue-500 hover:text-blue-600"
-                      aria-label="Previous photo"
-                    >
-                      <ChevronLeft className="size-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={nextSlide}
-                      className="grid size-10 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:border-blue-500 hover:text-blue-600"
-                      aria-label="Next photo"
-                    >
-                      <ChevronRight className="size-4" />
-                    </button>
-                  </div>
-
-                  <span className="font-mono text-xs font-bold text-slate-400 pl-1">
-                    <strong className="text-slate-900">
-                      {String(currentIndex + 1).padStart(2, "0")}
-                    </strong>{" "}
-                    / {String(galleryImages.length).padStart(2, "0")}
-                  </span>
-                </div>
-              )}
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs">
+              <span className="grid size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{galleryImages.length} Real Project Photos</span>
             </div>
           </Reveal>
         </div>
 
-        {/* 1. AUTO-SLIDER VIEW */}
-        {viewMode === "slider" && (
-          <div
-            className="flex flex-col gap-6"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            {/* Main Interactive Stage */}
-            <div className="group relative w-full overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-900 shadow-xl aspect-[16/10] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[640px]">
-              {/* Image with subtle zoom & smooth crossfade */}
-              {galleryImages.map((img, idx) => (
-                <div
-                  key={img.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                    idx === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
-                  }`}
-                >
+        {/* ALL PHOTOS GRID VIEW */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
+          {galleryImages.map((img, idx) => (
+            <Reveal key={img.id} direction="up" delay={idx * 30} className="h-full flex flex-col">
+              <button
+                type="button"
+                onClick={() => openLightbox(idx)}
+                className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200 bg-slate-100 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-500 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-left"
+                aria-label={`View photo ${idx + 1} full screen`}
+              >
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
                   <img
                     src={img.src}
                     alt={img.alt}
-                    className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/25" />
-                </div>
-              ))}
-
-              {/* Floating Expand Action Button */}
-              <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <button
-                  type="button"
-                  onClick={() => openLightbox(currentIndex)}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-white/95 px-6 py-3.5 text-xs font-bold text-slate-900 shadow-2xl backdrop-blur-md transition-all hover:scale-105 hover:bg-white focus:outline-none"
-                >
-                  <Maximize2 className="size-4 text-blue-600" />
-                  <span>View Full Photo</span>
-                </button>
-              </div>
-
-              {/* Navigation Arrows On Image */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  prevSlide();
-                }}
-                className="absolute left-4 top-1/2 z-20 grid size-12 -translate-y-1/2 place-items-center rounded-2xl bg-slate-950/60 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-900 shadow-lg focus:outline-none"
-                aria-label="Previous image"
-              >
-                <ChevronLeft className="size-6" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  nextSlide();
-                }}
-                className="absolute right-4 top-1/2 z-20 grid size-12 -translate-y-1/2 place-items-center rounded-2xl bg-slate-950/60 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-900 shadow-lg focus:outline-none"
-                aria-label="Next image"
-              >
-                <ChevronRight className="size-6" />
-              </button>
-
-              {/* Auto-Slide Progress Bar at bottom of stage */}
-              <div className="absolute inset-x-0 bottom-0 z-20 h-1.5 bg-white/20">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 via-emerald-400 to-amber-400 transition-all duration-100 ease-linear"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-
-              {/* Bottom Info Ribbon */}
-              <div className="absolute bottom-4 left-6 z-20 hidden sm:flex items-center gap-3">
-                <span className="rounded-full bg-slate-950/70 border border-white/20 px-3.5 py-1 text-xs font-mono font-bold text-white backdrop-blur-md">
-                  Photo {String(currentIndex + 1).padStart(2, "0")} of{" "}
-                  {String(galleryImages.length).padStart(2, "0")}
-                </span>
-              </div>
-            </div>
-
-            {/* Interactive Thumbnail Carousel Strip */}
-            <div
-              ref={thumbnailScrollRef}
-              className="flex items-center gap-3 overflow-x-auto pb-2 pt-1 scrollbar-none"
-            >
-              {galleryImages.map((img, idx) => {
-                const isActive = idx === currentIndex;
-                return (
-                  <button
-                    key={img.id}
-                    type="button"
-                    onClick={() => goToSlide(idx)}
-                    className={`group relative h-20 w-28 sm:h-24 sm:w-36 shrink-0 overflow-hidden rounded-2xl border-2 transition-all duration-300 focus:outline-none ${
-                      isActive
-                        ? "border-blue-600 ring-4 ring-blue-500/20 scale-[1.03] shadow-md"
-                        : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-400"
-                    }`}
-                    aria-label={`Jump to photo ${idx + 1}`}
-                  >
-                    <img
-                      src={img.src}
-                      alt={img.alt}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span className="absolute bottom-1.5 right-1.5 rounded-md bg-slate-950/80 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white backdrop-blur-xs">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* 2. ALL PHOTOS GRID VIEW */}
-        {viewMode === "grid" && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 md:gap-6">
-            {galleryImages.map((img, idx) => (
-              <Reveal key={img.id} direction="up" delay={idx * 30} className="h-full flex flex-col">
-                <button
-                  type="button"
-                  onClick={() => openLightbox(idx)}
-                  className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-500 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label={`View photo ${idx + 1} full screen`}
-                >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <img
-                      src={img.src}
-                      alt={img.alt}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-4">
-                      <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-900 shadow-lg">
-                        <Maximize2 className="size-3.5 text-blue-600" />
-                        <span>View Photo</span>
-                      </span>
-                    </div>
-                    <span className="absolute right-3 top-3 rounded-full bg-slate-950/75 px-2.5 py-0.5 font-mono text-[10px] font-bold text-white backdrop-blur-xs">
-                      {String(idx + 1).padStart(2, "0")}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-3.5 sm:p-4">
+                    <span className="inline-flex items-center gap-1.5 rounded-xl bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-900 shadow-lg backdrop-blur-xs">
+                      <Maximize2 className="size-3.5 text-blue-600" />
+                      <span>View Full Photo</span>
                     </span>
                   </div>
-                </button>
-              </Reveal>
-            ))}
+                  <span className="absolute right-3 top-3 rounded-full bg-slate-950/75 px-2.5 py-0.5 font-mono text-[10px] font-bold text-white backdrop-blur-xs">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                </div>
+              </button>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* Gallery Bottom Consultation Ribbon */}
+        <Reveal direction="up" delay={120}>
+          <div className="mt-12 sm:mt-14 rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-slate-50 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div>
+              <h3 className="font-display text-lg sm:text-xl font-bold text-slate-900">
+                Inspired by our completed projects?
+              </h3>
+              <p className="mt-1 text-xs sm:text-sm text-slate-600">
+                Talk to 4S Builders LTD today for honest advice and a 100% free, itemised consultation.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+              <a
+                href="tel:+447783686427"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-800 transition hover:border-orange-400 hover:text-orange-600 shadow-2xs"
+              >
+                <Phone className="size-3.5 text-orange-500" />
+                <span>+44 7783 686427</span>
+              </a>
+              <Button
+                onClick={onRequestQuote}
+                className="flex-1 sm:flex-none rounded-xl bg-blue-700 hover:bg-blue-800 px-5 py-2.5 text-xs font-bold text-white shadow-md transition"
+              >
+                <FileCheck className="size-3.5 mr-1.5 text-emerald-300" />
+                <span>Get Free Quote</span>
+              </Button>
+            </div>
           </div>
-        )}
+        </Reveal>
       </div>
 
       {/* FULLSCREEN LIGHTBOX MODAL */}
@@ -439,7 +205,7 @@ export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySect
                       (prev) => ((prev ?? 0) - 1 + galleryImages.length) % galleryImages.length,
                     )
                   }
-                  className="absolute left-4 top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-2xl bg-slate-900/80 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 shadow-xl"
+                  className="absolute left-4 top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-2xl bg-slate-900/80 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 shadow-xl cursor-pointer"
                   aria-label="Previous photo"
                 >
                   <ChevronLeft className="size-6" />
@@ -451,7 +217,7 @@ export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySect
                   onClick={() =>
                     setLightboxIndex((prev) => ((prev ?? 0) + 1) % galleryImages.length)
                   }
-                  className="absolute right-4 top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-2xl bg-slate-900/80 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 shadow-xl"
+                  className="absolute right-4 top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-2xl bg-slate-900/80 text-white backdrop-blur-md transition hover:bg-white hover:text-slate-950 shadow-xl cursor-pointer"
                   aria-label="Next photo"
                 >
                   <ChevronRight className="size-6" />
