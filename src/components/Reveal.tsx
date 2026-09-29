@@ -13,6 +13,7 @@ type RevealProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
+  direction?: "up" | "left" | "right" | "fade";
   as?: ElementType;
 };
 
@@ -20,6 +21,7 @@ export function Reveal({
   children,
   className,
   delay = 0,
+  direction = "up",
   as: Tag = "div",
 }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
@@ -48,14 +50,23 @@ export function Reveal({
     observer.observe(el);
 
     const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.92) show();
+    if (rect.top < window.innerHeight * 0.95) show();
     return () => observer.disconnect();
   }, []);
+
+  const directionClass =
+    direction === "left"
+      ? "reveal-left"
+      : direction === "right"
+      ? "reveal-right"
+      : direction === "fade"
+      ? "reveal-fade"
+      : "reveal-up";
 
   return (
     <Tag
       ref={ref}
-      className={cn("reveal", className)}
+      className={cn("reveal", directionClass, className)}
       style={{ "--delay": `${delay}ms` } as CSSProperties}
     >
       {children}
