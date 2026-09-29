@@ -101,12 +101,7 @@ export function GallerySection({ onRequestQuote, onLightboxChange }: GallerySect
             </p>
           </Reveal>
 
-          <Reveal direction="up" delay={80}>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs">
-              <span className="grid size-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{galleryImages.length} Real Project Photos</span>
-            </div>
-          </Reveal>
+          
         </div>
 
         {/* ALL PHOTOS GRID VIEW */}
