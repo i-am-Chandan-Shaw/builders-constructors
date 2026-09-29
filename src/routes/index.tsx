@@ -941,6 +941,21 @@ function Index() {
 
             <div className="flex flex-col gap-3 pt-6 text-xs text-slate-500 md:flex-row md:items-center md:justify-between">
               <p>© {new Date().getFullYear()} 4S Builders LTD. All rights reserved.</p>
+              <p className="flex items-center gap-1 text-xs text-slate-500">
+                <span>Crafted with</span>
+                <span className="text-red-500" aria-label="love">
+                  ♥
+                </span>
+                <span>by</span>
+                <a
+                  href="https://shadesoftech.co.uk/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-slate-700 transition-colors hover:text-blue-600 underline decoration-slate-300 underline-offset-2 hover:decoration-blue-500"
+                >
+                  Shades of Tech
+                </a>
+              </p>
               <div className="flex gap-5">
                 <a href="#top" className="font-medium transition hover:text-blue-600">
                   Back to Top
